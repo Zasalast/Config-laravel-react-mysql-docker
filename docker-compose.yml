@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: laravel-app
+    container_name: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - laravel
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: react-app
+    container_name: react-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - laravel
+
+networks:
+  laravel:
+
+volumes:
+  mysql-data:
